@@ -1,0 +1,100 @@
+:root {
+  --blue: #1f4e79;
+  --bg: #f6f8fa;
+  --border: #c9d4de;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  font-family: -apple-system, 'Segoe UI', Roboto, Arial, sans-serif;
+  background: var(--bg);
+  color: #1a1a1a;
+  margin: 0;
+  padding: 0 0 60px 0;
+}
+
+header {
+  background: var(--blue);
+  color: white;
+  padding: 28px 20px;
+  text-align: center;
+}
+
+header h1 {
+  margin: 0 0 8px 0;
+  font-size: 22px;
+}
+
+.subtitle {
+  margin: 0;
+  font-size: 14px;
+  opacity: 0.9;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+main {
+  max-width: 900px;
+  margin: 30px auto;
+  padding: 0 20px;
+}
+
+.field {
+  margin-bottom: 18px;
+  display: flex;
+  flex-direction: column;
+}
+
+.field label {
+  font-weight: 600;
+  margin-bottom: 6px;
+  color: var(--blue);
+}
+
+textarea {
+  min-height: 160px;
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  font-size: 14px;
+  font-family: inherit;
+  resize: vertical;
+}
+
+textarea[readonly] {
+  background: #fff;
+}
+
+button {
+  background: var(--blue);
+  color: white;
+  border: none;
+  padding: 12px 22px;
+  font-size: 15px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+button:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+button:hover:not(:disabled) {
+  background: #163a5c;
+}
+
+#status {
+  margin-top: 10px;
+  font-size: 13px;
+  color: #444;
+}
+
+.output-section {
+  margin-top: 30px;
+  border-top: 2px solid var(--border);
+  padding-top: 20px;
+}

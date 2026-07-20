@@ -1,0 +1,14 @@
+{
+  "name": "resume-tailoring-agent",
+  "version": "0.1.0",
+  "description": "MVP starter: paste a resume and job description, get a tailored resume and cover letter back.",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.32.0",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2"
+  }
+}
