@@ -1,4 +1,4 @@
-# Resume & Cover Letter Tailoring Agent — Starter
+# Resume & Cover Letter Tailoring Agent — Starter    Ahsan Abbasi & Szalv Zhilb are my team members
 
 This is the smallest working version of the P0 feature: paste a resume,
 paste a job description, click one button, get back a tailored resume and
