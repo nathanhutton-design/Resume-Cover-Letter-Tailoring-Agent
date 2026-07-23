@@ -49,15 +49,22 @@ app.post('/api/tailor', async (req, res) => {
       ],
     });
 
-    const raw = message.content[0].text;
-
+   const raw = message.content[0].text;
     let parsed;
     try {
-      parsed = JSON.parse(raw);
+      // Strip markdown code fences if the model added them despite
+      // instructions not to, and grab just the { ... } part in case
+      // there's any stray text before or after it.
+      let cleaned = raw.trim();
+      cleaned = cleaned.replace(/^```(?:json)?\s*/, '').replace(/```\s*$/, '');
+      const jsonMatch = cleaned.match(/\{[\s\S]*\}/);
+      if (jsonMatch) {
+        cleaned = jsonMatch[0];
+      }
+      parsed = JSON.parse(cleaned);
     } catch (parseErr) {
-      // If the model didn't return clean JSON, fall back to showing the raw
-      // text rather than crashing. This is a starter app, not production —
-      // tightening this up is a good next step.
+      // If it still isn't clean JSON, fall back to showing the raw
+      // text rather than crashing.
       parsed = {
         tailoredResume: raw,
         coverLetter: '(Could not separate the cover letter automatically — see the resume field above for the full response.)',
