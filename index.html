@@ -4,16 +4,35 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Resume & Cover Letter Tailoring Agent</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
+  <div class="bg-glow"></div>
+
   <header>
-    <h1>Resume &amp; Cover Letter Tailoring Agent</h1>
-    <p class="subtitle">Paste your resume and a job posting below. Get a tailored resume and cover letter back — grounded in what's already on your resume.</p>
+    <div class="header-inner">
+      <div class="brand">
+        <span class="brand-mark">R</span>
+        <span class="brand-name">Tailor</span>
+      </div>
+      <span class="badge">AI-powered</span>
+    </div>
+    <div class="hero">
+      <h1>Resume &amp; Cover Letter<br>Tailoring Agent</h1>
+      <p class="subtitle">Paste your resume and a job posting below. Get a tailored resume and cover letter back — grounded in what's already on your resume.</p>
+    </div>
   </header>
 
   <main>
-    <section class="input-section">
+    <section class="card input-section">
+      <div class="card-header">
+        <h2>Get started</h2>
+        <p>Drop in your details and let the agent do the matching.</p>
+      </div>
+
       <div class="field">
         <label for="resume">Your Resume</label>
         <textarea id="resume" placeholder="Paste your resume text here..."></textarea>
@@ -22,11 +41,20 @@
         <label for="jobDescription">Job Description</label>
         <textarea id="jobDescription" placeholder="Paste the IT / help desk job posting here..."></textarea>
       </div>
-      <button id="tailorBtn">Tailor My Application</button>
-      <p id="status"></p>
+
+      <div class="action-row">
+        <button id="tailorBtn">
+          <span class="btn-label">Tailor My Application</span>
+        </button>
+        <p id="status"></p>
+      </div>
     </section>
 
-    <section class="output-section" id="outputSection" hidden>
+    <section class="card output-section" id="outputSection" hidden>
+      <div class="card-header">
+        <h2>Your tailored application</h2>
+        <p>Review everything below before sending it anywhere.</p>
+      </div>
       <div class="field">
         <label for="tailoredResume">Tailored Resume</label>
         <textarea id="tailoredResume" readonly></textarea>
@@ -37,6 +65,10 @@
       </div>
     </section>
   </main>
+
+  <footer>
+    <p>Built for job seekers in IT &amp; help desk roles.</p>
+  </footer>
 
   <script src="script.js"></script>
 </body>
