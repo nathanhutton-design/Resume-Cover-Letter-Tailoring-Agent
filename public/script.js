@@ -53,6 +53,35 @@ function renderChangeSummary(items) {
   sectionEl.hidden = false;
 }
 
+function renderInterviewPrep(items) {
+  const sectionEl = document.getElementById('interviewPrepSection');
+  const listEl = document.getElementById('interviewPrepList');
+  listEl.innerHTML = '';
+
+  if (!items || items.length === 0) {
+    sectionEl.hidden = true;
+    return;
+  }
+
+  items.forEach((item) => {
+    const li = document.createElement('li');
+
+    const questionEl = document.createElement('p');
+    questionEl.className = 'change-line';
+    questionEl.textContent = item.question;
+
+    const talkingPointEl = document.createElement('p');
+    talkingPointEl.className = 'reason-line';
+    talkingPointEl.textContent = item.talkingPoint;
+
+    li.appendChild(questionEl);
+    li.appendChild(talkingPointEl);
+    listEl.appendChild(li);
+  });
+
+  sectionEl.hidden = false;
+}
+
 tailorBtn.addEventListener('click', async () => {
   const resume = document.getElementById('resume').value.trim();
   const jobDescription = document.getElementById('jobDescription').value.trim();
@@ -90,6 +119,9 @@ tailorBtn.addEventListener('click', async () => {
 
     document.getElementById('tailoredResume').value = data.tailoredResume;
     document.getElementById('coverLetter').value = data.coverLetter;
+
+    renderInterviewPrep(data.interviewPrep);
+
     outputSection.hidden = false;
     statusEl.textContent = 'Done! Review the output below before using it anywhere.';
     outputSection.scrollIntoView({ behavior: 'smooth' });

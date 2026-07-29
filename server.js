@@ -57,7 +57,9 @@ Also write a cover letter: specific, human, 3-4 short paragraphs, grounded only 
 
 Also produce a changeSummary: 3 to 6 items describing specific, real edits you made to the resume and why, each reason tied to something in the job description or posting. Do not describe a change you didn't actually make, and do not invent a reason that isn't grounded in the posting.
 
-Return your response as raw JSON with exactly three fields: "tailoredResume", "coverLetter", and "changeSummary" (an array of 3-6 objects, each with exactly two fields: "change" and "reason"). No markdown code fences, no extra commentary outside the JSON.`;
+Also produce an interviewPrep guide: 5 to 6 likely interview questions specific to THIS job posting, each paired with a talkingPoint — a concrete angle the candidate can use, drawn only from their ACTUAL resume. The HARD RULE above applies here too: never invent experience, projects, or skills the candidate doesn't actually have just to answer a question.
+
+Return your response as raw JSON with exactly four fields: "tailoredResume", "coverLetter", "changeSummary" (an array of 3-6 objects, each with exactly two fields: "change" and "reason"), and "interviewPrep" (an array of 5-6 objects, each with exactly two fields: "question" and "talkingPoint"). No markdown code fences, no extra commentary outside the JSON.`;
 
 // Strips markdown code fences and grabs just the {...} part in case the
 // model added stray text before or after the JSON, despite instructions.
@@ -221,10 +223,11 @@ app.post('/api/tailor', async (req, res) => {
       honesty = buildHonesty(matchScore.score, matchScore.missingSkills);
     }
 
-    const { tailoredResume, coverLetter, changeSummary } = await tailorWithinFacts(resume, jobDescription, facts, jdRequirements);
+    const { tailoredResume, coverLetter, changeSummary, interviewPrep } = await tailorWithinFacts(resume, jobDescription, facts, jdRequirements);
     const safeChangeSummary = Array.isArray(changeSummary) ? changeSummary : [];
+    const safeInterviewPrep = Array.isArray(interviewPrep) ? interviewPrep : [];
 
-    res.json({ tailoredResume, coverLetter, matchScore, changeSummary: safeChangeSummary, honesty });
+    res.json({ tailoredResume, coverLetter, matchScore, changeSummary: safeChangeSummary, interviewPrep: safeInterviewPrep, honesty });
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: 'Something went wrong calling the AI. Check your API key and try again.' });
