@@ -17,7 +17,7 @@ Do not migrate frameworks, add TypeScript, add a database, or add new AI provide
 1. **Never touch the API key handling.** The key lives only in `process.env.ANTHROPIC_API_KEY`, read server-side in `server.js`. Never move it client-side, never hardcode it, never log it, never put it in any file.
 2. **`public/` is the live app. The root-level `index.html`, `script.js`, `style.css` are DEAD/orphaned files — never edit them, never serve them.** All frontend edits happen in `public/`.
 3. **The anti-fabrication rule is sacred.** The system prompt must always forbid inventing skills, employers, titles, dates, or experience not present in the user's resume. Never weaken this.
-4. **One feature per branch.** Never work on `main` directly. Never combine features.
+4. **Work directly on `main`.** The developer commits after each feature is tested and working, and relies on the git tag `stable-demo-v1` and per-feature commits as the safety net instead of branches.
 5. **Never edit `.env`, `.gitignore`, `package-lock.json`, or `LICENSE`** unless a task explicitly says so.
 6. **Do not add dependencies** without the human's explicit say-so in the task. If a task needs one, name it and ask.
 

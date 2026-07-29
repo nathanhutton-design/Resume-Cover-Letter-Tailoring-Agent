@@ -7,6 +7,23 @@ const tailorBtn = document.getElementById('tailorBtn');
 const statusEl = document.getElementById('status');
 const outputSection = document.getElementById('outputSection');
 
+function renderSkillList(listId, skills, emptyText) {
+  const listEl = document.getElementById(listId);
+  listEl.innerHTML = '';
+  if (!skills || skills.length === 0) {
+    const li = document.createElement('li');
+    li.textContent = emptyText;
+    li.className = 'empty';
+    listEl.appendChild(li);
+    return;
+  }
+  skills.forEach((skill) => {
+    const li = document.createElement('li');
+    li.textContent = skill;
+    listEl.appendChild(li);
+  });
+}
+
 tailorBtn.addEventListener('click', async () => {
   const resume = document.getElementById('resume').value.trim();
   const jobDescription = document.getElementById('jobDescription').value.trim();
@@ -32,6 +49,13 @@ tailorBtn.addEventListener('click', async () => {
     if (!response.ok) {
       throw new Error(data.error || 'Something went wrong.');
     }
+
+    document.getElementById('honestyScore').textContent = `${data.matchScore.score} / 100`;
+    document.getElementById('honestyMessage').textContent = data.honesty.message;
+    document.getElementById('honestyBanner').className = `honesty-banner level-${data.honesty.level}`;
+
+    renderSkillList('matchedSkillsList', data.matchScore.matchedSkills, 'No overlapping skills found.');
+    renderSkillList('missingSkillsList', data.matchScore.missingSkills, 'No gaps — nice.');
 
     document.getElementById('tailoredResume').value = data.tailoredResume;
     document.getElementById('coverLetter').value = data.coverLetter;

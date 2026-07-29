@@ -8,6 +8,74 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css">
+<style>
+  .honesty-banner {
+    border-radius: 12px;
+    padding: 20px 24px;
+    margin-bottom: 24px;
+    border: 1.5px solid transparent;
+  }
+  .honesty-banner.level-low {
+    background: #fdecea;
+    border-color: #f0a99c;
+  }
+  .honesty-banner.level-moderate {
+    background: #fff8e1;
+    border-color: #f0d878;
+  }
+  .honesty-banner.level-strong {
+    background: #e9f9ee;
+    border-color: #9fe0b4;
+  }
+  .honesty-score {
+    font-size: 28px;
+    font-weight: 800;
+    margin-bottom: 6px;
+  }
+  .honesty-message {
+    margin: 0;
+    font-size: 14px;
+    line-height: 1.5;
+  }
+  .skills-grid {
+    display: flex;
+    gap: 24px;
+    margin-bottom: 28px;
+    flex-wrap: wrap;
+  }
+  .skills-col {
+    flex: 1 1 200px;
+  }
+  .skills-heading {
+    font-size: 13px;
+    font-weight: 700;
+    margin: 0 0 10px 0;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+  }
+  .skills-heading.matched { color: #1e8e4f; }
+  .skills-heading.gaps { color: #b6740a; }
+  .skills-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+  .skills-list li {
+    font-size: 13px;
+    padding: 4px 10px;
+    border-radius: 100px;
+  }
+  #matchedSkillsList li { background: #e9f9ee; color: #1e8e4f; }
+  #missingSkillsList li { background: #fff4dd; color: #b6740a; }
+  .skills-list .empty {
+    color: var(--ink-soft);
+    background: none !important;
+    padding: 4px 0;
+  }
+</style>
 </head>
 <body>
   <div class="bg-glow"></div>
@@ -55,6 +123,22 @@
         <h2>Your tailored application</h2>
         <p>Review everything below before sending it anywhere.</p>
       </div>
+      <div class="honesty-banner" id="honestyBanner">
+        <div class="honesty-score" id="honestyScore">-- / 100</div>
+        <p class="honesty-message" id="honestyMessage"></p>
+      </div>
+
+      <div class="skills-grid">
+        <div class="skills-col">
+          <h3 class="skills-heading matched">Matched skills</h3>
+          <ul class="skills-list" id="matchedSkillsList"></ul>
+        </div>
+        <div class="skills-col">
+          <h3 class="skills-heading gaps">Gaps to address</h3>
+          <ul class="skills-list" id="missingSkillsList"></ul>
+        </div>
+      </div>
+
       <div class="field">
         <label for="tailoredResume">Tailored Resume</label>
         <textarea id="tailoredResume" readonly></textarea>
