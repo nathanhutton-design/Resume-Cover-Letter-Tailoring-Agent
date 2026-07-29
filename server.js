@@ -117,6 +117,9 @@ async function extractJobRequirements(jobDescription) {
 // Step 3 — Compute the honest match. Deterministic, no AI. Do not change the
 // math (see specs/01-core-tailoring.md).
 function computeMatchScore(resumeText, requiredSkills, preferredSkills) {
+  if (requiredSkills.length === 0 && preferredSkills.length === 0) {
+    return { score: 0, matchedSkills: [], missingSkills: [], insufficientInput: true };
+  }
   const haystack = (resumeText || '').toLowerCase();
   const isMatched = (skill) => haystack.includes(skill.toLowerCase());
   const matchedRequired = requiredSkills.filter(isMatched);
@@ -191,7 +194,30 @@ app.post('/api/tailor', async (req, res) => {
     ]);
 
     const matchScore = computeMatchScore(resume, jdRequirements.requiredSkills, jdRequirements.preferredSkills);
-    const honesty = buildHonesty(matchScore.score, matchScore.missingSkills);
+
+    const jdInsufficient = jdRequirements.requiredSkills.length === 0 && jdRequirements.preferredSkills.length === 0;
+    const resumeInsufficient = facts.skills.length === 0 && facts.employers.length === 0 && facts.titles.length === 0;
+
+    let honesty;
+    if (jdInsufficient || resumeInsufficient) {
+      if (resumeInsufficient) {
+        // No real resume content to match against — a raw-text coincidence
+        // must not produce a misleadingly high score.
+        matchScore.score = 0;
+        matchScore.matchedSkills = [];
+        matchScore.missingSkills = jdRequirements.requiredSkills;
+      }
+      honesty = {
+        level: 'low',
+        message: jdInsufficient && resumeInsufficient
+          ? "We couldn't find a real resume or a real job posting in what you pasted. Paste your actual resume and an actual job description to get an honest match."
+          : jdInsufficient
+            ? "We couldn't find real job requirements in the job description you pasted. Paste the actual job posting to get an honest match score."
+            : "We couldn't find real resume content (skills, employers, or titles) in what you pasted. Paste your actual resume to get an honest match score.",
+      };
+    } else {
+      honesty = buildHonesty(matchScore.score, matchScore.missingSkills);
+    }
 
     const { tailoredResume, coverLetter } = await tailorWithinFacts(resume, jobDescription, facts, jdRequirements);
 

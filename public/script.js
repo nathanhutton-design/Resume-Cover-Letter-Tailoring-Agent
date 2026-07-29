@@ -61,6 +61,7 @@ tailorBtn.addEventListener('click', async () => {
     document.getElementById('coverLetter').value = data.coverLetter;
     outputSection.hidden = false;
     statusEl.textContent = 'Done! Review the output below before using it anywhere.';
+    outputSection.scrollIntoView({ behavior: 'smooth' });
   } catch (err) {
     statusEl.textContent = `Error: ${err.message}`;
   } finally {
