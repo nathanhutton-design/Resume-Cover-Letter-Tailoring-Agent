@@ -24,6 +24,35 @@ function renderSkillList(listId, skills, emptyText) {
   });
 }
 
+function renderChangeSummary(items) {
+  const sectionEl = document.getElementById('changeSummarySection');
+  const listEl = document.getElementById('changeSummaryList');
+  listEl.innerHTML = '';
+
+  if (!items || items.length === 0) {
+    sectionEl.hidden = true;
+    return;
+  }
+
+  items.forEach((item) => {
+    const li = document.createElement('li');
+
+    const changeEl = document.createElement('p');
+    changeEl.className = 'change-line';
+    changeEl.textContent = item.change;
+
+    const reasonEl = document.createElement('p');
+    reasonEl.className = 'reason-line';
+    reasonEl.textContent = item.reason;
+
+    li.appendChild(changeEl);
+    li.appendChild(reasonEl);
+    listEl.appendChild(li);
+  });
+
+  sectionEl.hidden = false;
+}
+
 tailorBtn.addEventListener('click', async () => {
   const resume = document.getElementById('resume').value.trim();
   const jobDescription = document.getElementById('jobDescription').value.trim();
@@ -56,6 +85,8 @@ tailorBtn.addEventListener('click', async () => {
 
     renderSkillList('matchedSkillsList', data.matchScore.matchedSkills, 'No overlapping skills found.');
     renderSkillList('missingSkillsList', data.matchScore.missingSkills, 'No gaps — nice.');
+
+    renderChangeSummary(data.changeSummary);
 
     document.getElementById('tailoredResume').value = data.tailoredResume;
     document.getElementById('coverLetter').value = data.coverLetter;

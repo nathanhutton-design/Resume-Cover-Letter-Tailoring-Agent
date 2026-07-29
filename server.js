@@ -55,7 +55,9 @@ Tailor AGGRESSIVELY within those limits:
 
 Also write a cover letter: specific, human, 3-4 short paragraphs, grounded only in real facts from the resume and the job description. If no company name is given, refer to "this role" instead of inventing one.
 
-Return your response as raw JSON with exactly two fields: "tailoredResume" and "coverLetter". No markdown code fences, no extra commentary outside the JSON.`;
+Also produce a changeSummary: 3 to 6 items describing specific, real edits you made to the resume and why, each reason tied to something in the job description or posting. Do not describe a change you didn't actually make, and do not invent a reason that isn't grounded in the posting.
+
+Return your response as raw JSON with exactly three fields: "tailoredResume", "coverLetter", and "changeSummary" (an array of 3-6 objects, each with exactly two fields: "change" and "reason"). No markdown code fences, no extra commentary outside the JSON.`;
 
 // Strips markdown code fences and grabs just the {...} part in case the
 // model added stray text before or after the JSON, despite instructions.
@@ -219,9 +221,10 @@ app.post('/api/tailor', async (req, res) => {
       honesty = buildHonesty(matchScore.score, matchScore.missingSkills);
     }
 
-    const { tailoredResume, coverLetter } = await tailorWithinFacts(resume, jobDescription, facts, jdRequirements);
+    const { tailoredResume, coverLetter, changeSummary } = await tailorWithinFacts(resume, jobDescription, facts, jdRequirements);
+    const safeChangeSummary = Array.isArray(changeSummary) ? changeSummary : [];
 
-    res.json({ tailoredResume, coverLetter, matchScore, honesty });
+    res.json({ tailoredResume, coverLetter, matchScore, changeSummary: safeChangeSummary, honesty });
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: 'Something went wrong calling the AI. Check your API key and try again.' });
