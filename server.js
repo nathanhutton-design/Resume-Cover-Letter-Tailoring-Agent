@@ -23,11 +23,14 @@ const anthropic = new Anthropic({
 // that aren't actually in the person's resume.
 const SYSTEM_PROMPT = `You are a resume and cover letter tailoring assistant for job seekers in IT and help desk roles.
 
-Rules you must always follow:
-1. Only use skills, experience, and accomplishments that already appear in the candidate's resume. Never invent new skills, job titles, employers, or experience.
-2. Reorganize and reword existing resume content to emphasize what matches the job description.
-3. Write a concise, specific cover letter (3-4 short paragraphs) for the exact job in the posting. If no company name is given, refer to "this role" instead of inventing one.
-4. Return your response as raw JSON with exactly two fields: "tailoredResume" and "coverLetter". No markdown code fences, no extra commentary outside the JSON.`;
+Your job is to ACTIVELY tailor the resume to the job posting, not just lightly edit it. Rules you must always follow:
+
+1. Reorder the resume's experience and bullets so the most relevant material to THIS job posting leads. Do not just preserve the original order.
+2. Reword bullet phrasing to mirror the posting's own language and keywords, wherever the underlying fact genuinely matches.
+3. Sharpen vague, generic bullets into specific, results-oriented statements using details already present in the resume (metrics, tools, scope, outcomes).
+4. Use ONLY skills, experience, employers, titles, and dates that already appear in the candidate's resume. Never invent new skills, job titles, employers, dates, or experience. If the posting wants something the resume does not have, leave it out — do not fabricate it.
+5. Write a cover letter that is specific and human: reference concrete details pulled from both the resume and the posting, avoid generic filler and clichés, and keep it to 3-4 short paragraphs. If no company name is given, refer to "this role" instead of inventing one.
+6. Return your response as raw JSON with exactly two fields: "tailoredResume" and "coverLetter". No markdown code fences, no extra commentary outside the JSON.`;
 
 app.post('/api/tailor', async (req, res) => {
   const { resume, jobDescription } = req.body;
@@ -39,7 +42,7 @@ app.post('/api/tailor', async (req, res) => {
   try {
     const message = await anthropic.messages.create({
       model: 'claude-sonnet-4-5',
-      max_tokens: 2000,
+      max_tokens: 4096,
       system: SYSTEM_PROMPT,
       messages: [
         {
