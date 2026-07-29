@@ -19,7 +19,9 @@ The obvious fix is "paste it into ChatGPT," but a raw LLM will happily **invent*
 Groundwork does the heavy lifting of tailoring **without ever fabricating**, and it tells you the truth about your fit instead of flattering you.
 
 - **Grounded tailoring.** It extracts the real facts from your resume first, then tailors *within* that fact set — it structurally cannot add a skill you don't have.
-- **Honest match score.** A deterministic score (0–100) tells you how well you actually match the role, with the specific gaps named.
+- **Honest match score.** A deterministic score (0–100) tells you how well you actually match the role, with the specific matched skills and gaps named.
+- **"What changed & why."** Every edit the agent makes is shown with a one-line rationale tied to the job posting — so you're never trusting a black box.
+- **Interview prep.** Likely questions drawn from the specific posting, each paired with a talking point grounded in your real experience.
 - **Human in the loop.** It produces drafts you review and send — it never auto-applies or auto-sends anything.
 
 The result is an application that's tailored *and* trustworthy — the opposite of AI slop.
@@ -34,6 +36,10 @@ The core is a four-step pipeline rather than a single "rewrite my resume" call �
 4. **Tailor within the facts** — a stronger model rewrites the resume and cover letter, constrained to the allowed-facts list, reordering and reframing real experience toward the job — and refusing to invent anything the résumé doesn't contain.
 
 An honesty banner then summarizes the fit in plain language ("Low match (9%). This role requires … which aren't on your resume. We tailored your real experience toward it but did not invent qualifications you don't have.").
+
+Alongside the tailored resume and cover letter, each run also returns a **change summary** (what was edited and why) and an **interview prep guide** (likely questions from the posting with talking points from the real resume). The full response is a single structured payload — `{ tailoredResume, coverLetter, matchScore, changeSummary, interviewPrep, honesty }` — that the frontend renders as reviewable panels.
+
+The design also guards against bad input: if the pasted text isn't a real resume or a real job posting, the score doesn't return a misleading high number — it flags that it couldn't find real content to work with.
 
 ## Tech stack
 
@@ -80,11 +86,21 @@ Open http://localhost:3000, paste a resume and a job posting, and click **Tailor
 
 ## Roadmap
 
-- **"What changed & why"** — a per-edit diff so users can see and trust every change.
-- **Interview prep guide** — likely questions from the posting, with talking points drawn from the real resume.
-- **Resume upload** — PDF/DOCX parsing with a verify-what-we-read step, so a messy layout never corrupts the input.
-- **Export** — download the tailored resume and cover letter as formatted documents.
-- **Production stack** — migration to Next.js + TypeScript.
+### v2 — Production rebuild
+- **Migrate to Next.js + TypeScript.** The MVP is intentionally plain Node/Express + vanilla JS so we could validate the core loop fast. Now that the tailoring quality and honesty guarantees are proven, a migration to Next.js + TypeScript buys us type safety (fewer runtime bugs across the resume/JD/response data shapes), server components for cleaner API handling, and a component-based UI that's far easier to extend as features grow. It also makes the codebase read as production-grade rather than prototype.
+- **Resume upload with parse-verification.** Accept PDF/DOCX, extract the text, and show the user what we parsed *before* tailoring — so a messy multi-column layout never silently corrupts the input. Keeps the human in the loop even at the input stage.
+- **Formatted export.** Download the tailored resume and cover letter as polished PDF/DOCX, not just plain text.
+- **User accounts.** Save applications, revisit past tailoring, and track which version went to which job.
+
+### v3 — From tool to workflow
+- **Application tracker.** A pipeline board (applied → interviewing → offer) that ties each tailored resume to its posting, turning Groundwork from a one-shot tool into a job-search command center.
+- **Fabrication guard as a safety layer.** A deterministic check that scans every generated draft against the extracted fact list and flags anything not traceable to the real resume — automated proof of the no-fabrication promise, before the user ever sees the output.
+- **Follow-up drafting.** After N days without a response, draft a follow-up email in the candidate's voice — still human-sent, never automated.
+- **"De-AI-ify" pass.** An optional step that rewrites the draft to remove the tells recruiters use to spot AI-generated writing, directly targeting the market signal our research surfaced.
+- **Response-rate tracking.** Let users log which applications got responses, so over time Groundwork can measure the thing that actually matters — interview rate — and prove the "quality over volume" thesis with real data.
+
+### Guiding principle
+Every future feature is measured against one bar: does it keep the human in control and the output honest? We will not add auto-apply or auto-send — the entire product exists because the market went the other way and it backfired.
 
 ## A note on our development process
 
