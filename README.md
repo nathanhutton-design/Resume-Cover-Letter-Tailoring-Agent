@@ -1,59 +1,99 @@
-# Resume & Cover Letter Tailoring Agent — Starter    Ahsan Abbasi & Szalv Zhilb are my team members
+# Groundwork
 
-This is the smallest working version of the P0 feature: paste a resume,
-paste a job description, click one button, get back a tailored resume and
-cover letter. No file upload, no login, no export formatting — just the
-core AI loop, proven end-to-end.
+**An AI agent that tailors your resume and cover letter to any job — grounded strictly in your real experience, and honest about your actual fit.**
 
-## How it's built
+Live demo: https://resume-cover-letter-tailoring-agent-3ngp.onrender.com
 
-- `public/index.html` + `public/style.css` — the webpage (two text boxes, one button, one results area).
-- `public/script.js` — runs in the browser, sends what you typed to the server.
-- `server.js` — the only place your API key lives. Receives the resume + job description, sends them to Claude with instructions, sends the tailored result back to the page.
+> Built as an AI-Native capstone at Pursuit by Ahsan Abbasi, Nathan Hutton, and Sal Zil.
 
-## Setup
+---
 
-1. **Install Node.js** if you don't have it: https://nodejs.org (LTS version).
+## The problem
 
-2. **Install the project's dependencies.** From inside this folder, run:
-   ```
-   npm install
-   ```
+Job seekers — especially career switchers — spend 30–60 minutes tailoring their resume and cover letter for every posting. Across a search that's 50–100 hours of repetitive work, and it often still misses what the job screens for.
 
-3. **Get an API key.** Go to https://console.anthropic.com, create an account if needed, and generate an API key.
+The obvious fix is "paste it into ChatGPT," but a raw LLM will happily **invent** skills and experience to make you look like a match. Recruiters now filter exactly that out — a majority of hiring managers say an obviously-AI resume actively hurts the candidate. So the tool people reach for to save time is quietly lowering their response rate.
 
-4. **Add your key.** Copy `.env.example` to a new file named `.env`, and paste your key in:
-   ```
-   ANTHROPIC_API_KEY=sk-ant-...your real key...
-   PORT=3000
-   ```
-   Never commit `.env` to git or share it — it's your private password to the AI.
+## What Groundwork does differently
 
-5. **Run the server:**
-   ```
-   npm start
-   ```
+Groundwork does the heavy lifting of tailoring **without ever fabricating**, and it tells you the truth about your fit instead of flattering you.
 
-6. **Open the app.** Go to http://localhost:3000 in your browser. Paste a real resume and a real IT/help desk job posting, click "Tailor My Application," and read the output critically — check it didn't invent any skills.
+- **Grounded tailoring.** It extracts the real facts from your resume first, then tailors *within* that fact set — it structurally cannot add a skill you don't have.
+- **Honest match score.** A deterministic score (0–100) tells you how well you actually match the role, with the specific gaps named.
+- **Human in the loop.** It produces drafts you review and send — it never auto-applies or auto-sends anything.
 
-## What this is NOT (on purpose)
+The result is an application that's tailored *and* trustworthy — the opposite of AI slop.
 
-This starter skips everything that isn't the core loop, so you can test the
-one thing that matters first:
+## How it works
 
-- No resume file upload (PDF/DOCX) — paste text only for now.
-- No download/export to PDF or DOCX — output is plain text you copy.
-- No editing in-app — you'd copy the output into your own document to fix anything.
-- No job scraping or skill-level categorization — those depend on external job board data and are out of scope for this build.
+The core is a four-step pipeline rather than a single "rewrite my resume" call — this is what makes the output both grounded and explainable:
 
-Once the tailoring quality is genuinely good, layer these on top in this
-rough order: resume upload/parsing → in-app review/edit → formatted
-PDF/DOCX export → regenerate button.
+1. **Extract resume facts** — a fast model pulls the candidate's real skills, employers, titles, and metrics into a structured "allowed-facts" list.
+2. **Extract job requirements** — the same step, applied to the job description, produces the required and preferred skills.
+3. **Score the match (deterministic)** — plain JavaScript, no AI, computes a 0–100 score from the overlap between the two, and lists matched skills and gaps. Because it's deterministic, the score is explainable and reproducible.
+4. **Tailor within the facts** — a stronger model rewrites the resume and cover letter, constrained to the allowed-facts list, reordering and reframing real experience toward the job — and refusing to invent anything the résumé doesn't contain.
 
-## A note on the AI's honesty
+An honesty banner then summarizes the fit in plain language ("Low match (9%). This role requires … which aren't on your resume. We tailored your real experience toward it but did not invent qualifications you don't have.").
 
-The system prompt in `server.js` explicitly tells the model to only use
-skills and experience already present in the resume — never invent
-anything. This is the single most important rule in the whole app. If you
-test it and the output includes anything that isn't true about you, that's
-a bug worth fixing before anything else.
+## Tech stack
+
+- **Backend:** Node.js + Express (`server.js`) — serves the app and exposes a single `/api/tailor` endpoint.
+- **Frontend:** vanilla HTML/CSS/JavaScript (`public/`), no build step.
+- **AI:** Anthropic API — a fast model for extraction, a stronger model for the tailoring rewrite.
+- **Deploy:** Render (Node web service).
+
+The Anthropic API key lives only server-side, read from an environment variable — it is never exposed to the browser or committed to the repo.
+
+## Running locally
+
+**Prerequisites:** Node.js (LTS) and an Anthropic API key (https://console.anthropic.com).
+
+```bash
+# 1. Install dependencies
+npm install
+
+# 2. Configure your key
+cp .env.example .env
+#    then edit .env and set:
+#    ANTHROPIC_API_KEY=sk-ant-...your key...
+#    PORT=3000
+
+# 3. Start the server
+npm start
+```
+
+Open http://localhost:3000, paste a resume and a job posting, and click **Tailor My Application**. Review the output before using it anywhere.
+
+## Project structure
+
+```
+├── server.js            # Express server, /api/tailor endpoint, the tailoring pipeline
+├── public/
+│   ├── index.html       # UI: inputs, results, honesty banner
+│   ├── script.js        # calls /api/tailor and renders the results
+│   └── style.css        # styling
+├── CLAUDE.md            # operating manual for AI coding agents on this repo
+├── specs/               # per-feature specifications
+├── .env.example         # template for local configuration
+└── package.json
+```
+
+## Roadmap
+
+- **"What changed & why"** — a per-edit diff so users can see and trust every change.
+- **Interview prep guide** — likely questions from the posting, with talking points drawn from the real resume.
+- **Resume upload** — PDF/DOCX parsing with a verify-what-we-read step, so a messy layout never corrupts the input.
+- **Export** — download the tailored resume and cover letter as formatted documents.
+- **Production stack** — migration to Next.js + TypeScript.
+
+## A note on our development process
+
+This project was built AI-natively. The repo includes a `CLAUDE.md` operating manual and a `specs/` directory of per-feature specifications, so AI coding agents work within tight, explicit guardrails — the same discipline the product itself applies to resume tailoring: do the heavy lifting, but stay grounded and honest.
+
+## Team
+
+Ahsan Abbasi · Nathan Hutton · Sal Zil
+
+## License
+
+See [LICENSE](LICENSE).
